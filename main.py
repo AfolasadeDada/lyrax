@@ -1,24 +1,31 @@
-from core.claim_extractor import extract_claims
-from core.claim_classifier import classify_claims
+# main.py
+
+from core.claim_classifier import classify_claims  # your existing claim classifier
 from core.contradiction_checker import ContradictionChecker
-from core.db import init_db
 
-# Initialize DB
-init_db()
-
+# Initialize contradiction checker with 90% threshold
 checker = ContradictionChecker(threshold=0.9)
 
-text = """
-The sky is blue. The sky is not blue. Water is wet.
-"""
+# Example input claims
+claims_input = [
+    "The sky is blue",
+    "The sky is not blue",
+    "Water is wet"
+]
 
-claims = extract_claims(text)
-classified_claims = classify_claims(claims)
-
-print("Extracted Claims:", claims)
+# Step 1: Extract / classify claims
+print("Extracted Claims:", claims_input)
+classified_claims = classify_claims(claims_input)
 print("Classified Claims:", classified_claims)
 
-for c in classified_claims:
-    result = checker.check_contradiction(c)
-    print(result)
+# Step 2: Check each claim for contradictions
+for claim in classified_claims:
+    result = checker.check_contradiction(claim)
+    if result["contradiction"]:
+        print("⚠️ CONTRADICTION DETECTED")
+        print("Against:", result["against"])
+        print("Score:", result["score"])
+    else:
+        print("✅ No high-confidence contradiction")
+
 
